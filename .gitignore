@@ -14,4 +14,8 @@
 .externalNativeBuild
 .cxx
 local.properties
+/app/src/androidTest/java/it/polito/mad/es/s291595/listapplication/ExampleInstrumentedTest.kt
+/app/src/test/java/it/polito/mad/es/s291595/listapplication/ExampleUnitTest.kt
 /build/
+/build/kotlin/sessions/
+/build/kotlin/
