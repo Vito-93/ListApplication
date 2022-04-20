@@ -1,2 +1,3 @@
 /build
-test
+app/src/test/java/it/polito/mad/es/s291595/listapplication/ExampleUnitTest.kt
+app/src/androidTest/java/it/polito/mad/es/s291595/listapplication/ExampleInstrumentedTest.kt
