@@ -25,42 +25,61 @@ class MainActivity : AppCompatActivity() {
 
         var counter = 0
 
+        val boys = listOf<String>("Peppe", "Jhonny", "Carmelo", "Luigi", "Saro")
+        val girls = listOf<String>("Peppa", "Giovanna", "Carmela", "Luigia", "Sara")
 
-        val items = (1..2).map {
-            Item("Name$it", (Math.random()*20+18).toInt(), imageUrl ="https://randomuser.me/api/portraits/men/$it.jpg")
+        val itemboys = (1..3).map {
+            MalePerson(boys.elementAt(it-1), (Math.random()*20+18).toInt(), imageUrl ="https://randomuser.me/api/portraits/men/$it.jpg")
         }.toMutableList()
-        //"https://randomuser.me/api/portraits/women$it.jpg"         https://randomuser.me/api/portraits/women/26.jpg
 
-        val itemAdapter = ItemAdapter(items)
+        val itemgirls = (1..3).map {
+            FemalePerson(girls.elementAt(it-1), (Math.random()*20+18).toInt(), imageUrl ="https://randomuser.me/api/portraits/women/$it.jpg")
+        }.toMutableList()
+        //"https://randomuser.me/api/portraits/women$it.jpg"         https://randomuser.me/api/portraits/women/26.jpg2
+
+        // mix 1 boy and 1 girl 1 boy and 1 girl...
+        val people = itemboys.zip(itemgirls).flatMap{ it -> listOf(it.first, it.second)}
+        val itemAdapter = ItemAdapter(people as MutableList<Item>)
         rv.adapter = itemAdapter
 
-        //add item
-        val add = findViewById<Button>(R.id.add)
-        add.setOnClickListener {
-            val n = items.size + 1
-            itemAdapter.add(
-                Item(
-                    "Name$n",
-                    (Math.random() * 20 + 18).toInt(),
-                    imageUrl = "https://randomuser.me/api/portraits/men/$n.jpg"
-                )
-            )
-        }
-        //delete item
-        val remove = findViewById<Button>(R.id.remove)
-        try {
-            remove.setOnClickListener {
-                counter++;
-                itemAdapter.delete()
-
-            }
-        } catch (err: Error){
-            Log.e(TAG, "Errore delete")
-        }
+//        //add item
+//        val add = findViewById<Button>(R.id.add)
+//        add.setOnClickListener {
+//            val n = items.size + 1
+//            itemAdapter.add(
+//                Item(
+//                    "Name$n",
+//                    (Math.random() * 20 + 18).toInt(),
+//                    imageUrl = "https://randomuser.me/api/portraits/men/$n.jpg"
+//                )
+//            )
+//        }
+//        //delete item
+//        val remove = findViewById<Button>(R.id.remove)
+//        try {
+//            remove.setOnClickListener {
+//                counter++;
+//                itemAdapter.delete()
+//
+//            }
+//        } catch (err: Error){
+//            Log.e(TAG, "Errore delete")
+//        }
     }
 }
 
-data class Item(val name: String, val age: Int, val imageUrl: String)
+open class Item(val name: String, val age: Int, val imageUrl: String){
+
+}
+
+class MalePerson(name: String, age: Int, imageUrl: String): Item(name, age, imageUrl){
+
+}
+
+class FemalePerson(name: String, age: Int, imageUrl: String): Item(name, age, imageUrl){
+
+}
+
 
 class ItemAdapter(val items: MutableList<Item>): RecyclerView.Adapter<ItemAdapter.ItemViewHolder>(){
     class ItemViewHolder(v: View): RecyclerView.ViewHolder(v){
@@ -90,8 +109,13 @@ class ItemAdapter(val items: MutableList<Item>): RecyclerView.Adapter<ItemAdapte
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-        val layout = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_layout, parent, false)
+        val layoutInflater = LayoutInflater.from(parent.context)
+        val layout = if( viewType == R.layout.male_layout){
+            layoutInflater.inflate(R.layout.male_layout, parent, false)
+        } else{
+            layoutInflater.inflate(R.layout.female_layout, parent, false)
+        }
+
         return ItemViewHolder(layout)
     }
 
@@ -103,13 +127,20 @@ class ItemAdapter(val items: MutableList<Item>): RecyclerView.Adapter<ItemAdapte
         return items.size;
     }
 
-    fun add(item: Item){
-        items.add(item)
-        this.notifyItemInserted(items.size-1)
+    override fun getItemViewType(position: Int): Int {
+        if (items[position] is MalePerson)
+            return R.layout.male_layout
+        else
+            return R.layout.female_layout
     }
 
-    fun delete(){
-        items.removeAt(0)
-        this.notifyItemRemoved(0)
-    }
+//    fun add(item: Item){
+//        items.add(item)
+//        this.notifyItemInserted(items.size-1)
+//    }
+//
+//    fun delete(){
+//        items.removeAt(0)
+//        this.notifyItemRemoved(0)
+//    }
 }
